@@ -14,10 +14,24 @@ def main():
         print(f"Could not read the file: {error}")
         return
     if data:
+        print("Detected format:", file_sig(data))
         reader(data)
     else:
         print("File is empty!")
 
+def file_sig(data):
+    signatures = {
+        b"\xff\xd8\xff": "JPG",
+        b"\x89PNG\r\n\x1a\n": "PNG",
+        b"%PDF-": "PDF",
+        b"GIF87a": "GIF 87",
+        b"GIF89a": "GIF 89",
+    }
+    for sig, type in signatures.items():
+        if data.startswith(sig):
+            return type
+
+    return "Unknown file format"
 
 def reader(d):
     print(f"{'Offset':8} | {'Hex':^47} | Text")
