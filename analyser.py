@@ -16,6 +16,17 @@ def main():
     if data:
         print("Detected format:", file_sig(data))
         reader(data)
+        strings = str_extract(data)
+
+        print("\nExtracted strings:")
+        print("Offset   | String")
+        print("-" * 40)
+
+        for offset, text in strings:
+            print(f"{offset:08x} | {text}")
+
+        if not strings:
+            print("No strings met the minimum length.")
     else:
         print("File is empty!")
 
@@ -49,6 +60,26 @@ def reader(d):
 
         hex_values = chunk.hex(" ")
         print(f"{offset:08x} | {hex_values:<47} | {text}")
+
+def str_extract(data,min_length=4):
+    results = []
+    current_str = ""
+    start = 0
+
+    for o, v in enumerate(data):
+        if 32 <= v <= 128:
+            if current_str == "":
+                start = o
+            current_str += chr(v)
+        else:
+            if len(current_str) >= min_length:
+                results.append((start, current_str)) # store results as tuples
+            current_str = ""
+    if len(current_str) >= min_length:
+        results.append((start, current_str))
+    
+    return results
+
 
 if __name__ == "__main__":
     main()
