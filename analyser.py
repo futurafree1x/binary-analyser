@@ -38,16 +38,16 @@ def file_sig(data):
         b"GIF87a": "GIF 87",
         b"GIF89a": "GIF 89",
     }
-    for sig, type in signatures.items():
+    for sig, file_type in signatures.items():
         if data.startswith(sig):
-            return type
+            return file_type
 
     return "Unknown file format"
 
-def reader(d):
+def reader(data):
     print(f"{'Offset':8} | {'Hex':^47} | Text")
     print("-" * 76)
-    for offset in range(0, len(d), 16):
+    for offset in range(0, len(data), 16):
         chunk = d[offset:offset + 16]
 
         text = ""
@@ -66,11 +66,11 @@ def str_extract(data,min_length=4):
     current_str = ""
     start = 0
 
-    for o, v in enumerate(data):
-        if 32 <= v <= 128:
+    for offset, value in enumerate(data):
+        if 32 <= value <= 126:
             if current_str == "":
-                start = o
-            current_str += chr(v)
+                start = offset
+            current_str += chr(value)
         else:
             if len(current_str) >= min_length:
                 results.append((start, current_str)) # store results as tuples
