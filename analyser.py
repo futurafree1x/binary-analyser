@@ -1,9 +1,18 @@
 def main():
-    file_path = input("Enter a file to open: ")
+    file_path = input("Enter a file to open: ").strip()
+    to_read = input("Enter an amount of bytes to read(or leave blank to read entire file): ").strip()
+    if to_read == "":
+        to_read = -1 # -1 reads entire file
+    else:
+        try:
+            to_read = int(to_read)
+        except ValueError:
+            print("Please enter a whole number.")
+            return
 
     try:
         with open(file_path, "rb") as file:
-            data = file.read(32)
+            data = file.read(to_read)
     except FileNotFoundError:
         print("That file could not be found.")
         return
@@ -48,7 +57,7 @@ def reader(data):
     print(f"{'Offset':8} | {'Hex':^47} | Text")
     print("-" * 76)
     for offset in range(0, len(data), 16):
-        chunk = d[offset:offset + 16]
+        chunk = data[offset:offset + 16]
 
         text = ""
 
