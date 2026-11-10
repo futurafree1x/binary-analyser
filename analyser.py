@@ -1,3 +1,5 @@
+import os
+
 SIGNATURES = {
     b"\xff\xd8\xff": "JPG",
     b"\x89PNG\r\n\x1a\n": "PNG",
@@ -34,6 +36,7 @@ def main():
         print(f"Could not read the file: {error}")
         return
     if data:
+        print("File size:", os.path.getsize(file_path))
         print("Detected format:", file_sig(data))
         reader(data)
         strings = str_extract(data)
@@ -52,7 +55,7 @@ def main():
 
 def file_sig(data):
     
-    for sig, file_type in signatures.items():
+    for sig, file_type in SIGNATURES.items():
         if data.startswith(sig):
             return file_type
 
