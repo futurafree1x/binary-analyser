@@ -1,3 +1,14 @@
+SIGNATURES = {
+    b"\xff\xd8\xff": "JPG",
+    b"\x89PNG\r\n\x1a\n": "PNG",
+    b"%PDF-": "PDF",
+    b"GIF87a": "GIF 87",
+    b"GIF89a": "GIF 89",
+    b"PK\x03\x04": "ZIP",
+    b"\x7fELF": "ELF", # linux
+    b"MZ": "EXE",
+}
+
 def main():
     file_path = input("Enter a file to open: ").strip()
     to_read = input("Enter an amount of bytes to read(or leave blank to read entire file): ").strip()
@@ -40,13 +51,7 @@ def main():
         print("File is empty!")
 
 def file_sig(data):
-    signatures = {
-        b"\xff\xd8\xff": "JPG",
-        b"\x89PNG\r\n\x1a\n": "PNG",
-        b"%PDF-": "PDF",
-        b"GIF87a": "GIF 87",
-        b"GIF89a": "GIF 89",
-    }
+    
     for sig, file_type in signatures.items():
         if data.startswith(sig):
             return file_type
