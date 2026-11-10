@@ -1,4 +1,5 @@
 import os
+import hashlib
 
 SIGNATURES = {
     b"\xff\xd8\xff": "JPG",
@@ -37,6 +38,9 @@ def main():
         return
     if data:
         print("File size:", os.path.getsize(file_path))
+        md5_hash, sha256_hash = hash_file(file_path)
+        print("MD5:    ", md5_hash)
+        print("SHA-256:", sha256_hash)
         print("Detected format:", file_sig(data))
         reader(data)
         strings = str_extract(data)
@@ -96,6 +100,24 @@ def str_extract(data,min_length=4):
         results.append((start, current_str))
     
     return results
+
+def hash_file(file_path, chunk_size=65536): # 64kb chunk
+    """ return MD5 and SHA-256 hashes of the file as hex strings """
+    md5 = hashlib.md5()
+    sha256 = hashlib.sha256()
+
+    with open(file_path, "rb") as file:
+        while True:
+            chunk = file.read(chunk_size)
+            if not chunk:
+                break
+            md5.update(chunk)
+            sha256.update(chunk)
+
+        return md5.hexdigest(),
+    sha256.hexdigest()
+
+
 
 
 if __name__ == "__main__":
