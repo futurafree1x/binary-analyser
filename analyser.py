@@ -1,4 +1,3 @@
-import os
 import hashlib
 
 SIGNATURES = {
@@ -18,7 +17,7 @@ HEX_DUMP_DEFAULT = 256  # bytes shown in the hex dump unless the user asks for m
 
 def main():
     file_path = input("Enter a file to open: ").strip()
-    limit = input(f"Bytes to show (blank) = {HEX_DUMP_DEFAULT}, 'all' = entire file):").strip()
+    limit = input(f"Bytes to show (blank) = {HEX_DUMP_DEFAULT}, 'all' = entire file):").strip().lower()
     if limit == "":
         limit = HEX_DUMP_DEFAULT
     elif limit == "all":
