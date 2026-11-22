@@ -14,21 +14,28 @@ SIGNATURES = {
 
 MAX_SIG_LEN = max(len(sig) for sig in SIGNATURES)
 
+HEX_DUMP_DEFAULT = 256  # bytes shown in the hex dump unless the user asks for more
+
 def main():
     file_path = input("Enter a file to open: ").strip()
-    to_read = input("Enter an amount of bytes to read(or leave blank to read entire file): ").strip()
-    if to_read == "":
-        to_read = -1 # -1 reads entire file
+    limit = input(f"Bytes to show (blank) = {HEX_DUMP_DEFAULT}, 'all' = entire file):").strip()
+    if limit == "":
+        limit = HEX_DUMP_DEFAULT
+    elif limit == "all":
+        limit = None
     else:
         try:
-            to_read = int(to_read)
+            limit = int(limit)
         except ValueError:
-            print("Please enter a whole number.")
+            print("Please enter a whole number or 'all'.")
+            return
+        if limit <= 0:
+            print("Please enter a number greater than 0.")
             return
 
     try:
         with open(file_path, "rb") as file:
-            data = file.read(to_read)
+            data = file.read()
     except FileNotFoundError:
         print("That file could not be found.")
         return
@@ -38,26 +45,33 @@ def main():
     except OSError as error:
         print(f"Could not read the file: {error}")
         return
-    if data:
-        print("File size:", os.path.getsize(file_path))
-        md5_hash, sha256_hash = hash_file(file_path)
-        print("MD5:    ", md5_hash)
-        print("SHA-256:", sha256_hash)
-        print("Detected format:", file_sig(file_path))
-        reader(data)
-        strings = str_extract(data)
-
-        print("\nExtracted strings:")
-        print("Offset   | String")
-        print("-" * 40)
-
-        for offset, text in strings:
-            print(f"{offset:08x} | {text}")
-
-        if not strings:
-            print("No strings met the minimum length.")
-    else:
+    
+    if not data:
         print("File is empty!")
+        return
+
+    print("File size:", len(data), "bytes")
+    md5_hash, sha256_hash = hash_file(file_path)
+    print("MD5:    ", md5_hash)
+    print("SHA-256:", sha256_hash)
+    print("Detected format:", file_sig(file_path))
+
+    print()
+    reader(data[:limit])
+    if limit is not None and len(data) > limit:
+        print(f"... showing first {limit} of {len(data)} bytes")
+
+    strings = str_extract(data)
+
+    print("\nExtracted strings:")
+    print("Offset   | String")
+    print("-" * 40)
+
+    for offset, text in strings:
+        print(f"{offset:08x} | {text}")
+
+    if not strings:
+        print("No strings met the minimum length.")
 
 def file_sig(file_path):
     with open(file_path, "rb") as file:
