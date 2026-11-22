@@ -12,6 +12,8 @@ SIGNATURES = {
     b"MZ": "EXE",
 }
 
+MAX_SIG_LEN = max(len(sig) for sig in SIGNATURES)
+
 def main():
     file_path = input("Enter a file to open: ").strip()
     to_read = input("Enter an amount of bytes to read(or leave blank to read entire file): ").strip()
@@ -41,7 +43,7 @@ def main():
         md5_hash, sha256_hash = hash_file(file_path)
         print("MD5:    ", md5_hash)
         print("SHA-256:", sha256_hash)
-        print("Detected format:", file_sig(data))
+        print("Detected format:", file_sig(file_path))
         reader(data)
         strings = str_extract(data)
 
@@ -57,10 +59,12 @@ def main():
     else:
         print("File is empty!")
 
-def file_sig(data):
-    
+def file_sig(file_path):
+    with open(file_path, "rb") as file:
+        header = file.read(MAX_SIG_LEN)
+
     for sig, file_type in SIGNATURES.items():
-        if data.startswith(sig):
+        if header.startswith(sig):
             return file_type
 
     return "Unknown file format"
