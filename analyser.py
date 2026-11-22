@@ -114,8 +114,7 @@ def hash_file(file_path, chunk_size=65536): # 64kb chunk
             md5.update(chunk)
             sha256.update(chunk)
 
-        return md5.hexdigest(),
-    sha256.hexdigest()
+        return md5.hexdigest(), sha256.hexdigest()
 
 
 
